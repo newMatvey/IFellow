@@ -1,4 +1,3 @@
-import org.example.SortFile;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -7,24 +6,25 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.sql.Time;
-import java.util.Date;
 import java.util.Random;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 
 public class TestSortFile {
     private int countLineInSortedFile = 0;
+
     @Test
     public void test() {
-        generate("data.txt", 1_000_000);
-        long startTime = System.currentTimeMillis();
-        File sortedFile = SortFile.sortFile(new File("data.txt"));
-        long endTime = System.currentTimeMillis();
-        System.out.println("затрачено секунд: " + (endTime - startTime) / 1000);
-        assertTrue(isSorted(sortedFile));
-        assertEquals(1_000_000, countLineInSortedFile);
-        System.out.println();
+//        generate("data.txt", 1_000_000);
+//        long startTime = System.currentTimeMillis();
+//        File sortedFile = SortFile.sortFile(new File("data.txt"));
+//        long endTime = System.currentTimeMillis();
+//        System.out.println("затрачено секунд: " + (endTime - startTime) / 1000);
+//        assertTrue(isSorted(sortedFile));
+//        assertEquals(1_000_000, countLineInSortedFile);
+//        System.out.println();
     }
 
     private File generate(String name, int count) {

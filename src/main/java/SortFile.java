@@ -1,32 +1,35 @@
-package org.example;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 
 public class SortFile {
-    private static long memory;
+    private static final long memory;
 
-    private static long chengeMaxChankSize() {
-        memory = Runtime.getRuntime().maxMemory() - 10_000;
-        return memory;
+    static {
+        long freeMemory = Runtime.getRuntime().freeMemory();
+        memory = (long) (freeMemory * 0.7); // размер чанка не будет превышать 80% свободной памяти
     }
 
     public static File sortFile(File dataFile) {
-        final long chunkSize = chengeMaxChankSize();
         File outputFile = new File("data_sorted.txt");
         List<String> chunkPaths = new ArrayList<>();
+        int chankNum = 0;
         try {
-            int chankNum = 0;
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(dataFile)))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    long currentBatchSize = 0;
+                String line = reader.readLine();
+                while (line != null) {
+                    long currentChankSize = 0;
                     List<String> chunk = new ArrayList<>();
-                    long lineSize = 8 + line.length() * 2L;
-                    while (currentBatchSize + lineSize <= chunkSize && line != null) {
-                        currentBatchSize += lineSize;
+                    long lineSizeInByte = 8 + line.length() * 2L;
+                    while (currentChankSize + lineSizeInByte <= memory && line != null) {
+                        currentChankSize += lineSizeInByte;
                         chunk.add(line);
                         line = reader.readLine();
                     }
@@ -64,12 +67,10 @@ public class SortFile {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            int countChunk = 0;
             for (String chunkPath : chunkPaths) {
-                countChunk++;
                 new File(chunkPath).delete();
             }
-            System.out.println("была выполнена сортировка за " + countChunk + " подходов к файлу");
+            System.out.println("Файл был разбит на " + chankNum + " части(ей)");
         }
         return outputFile;
     }
